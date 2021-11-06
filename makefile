@@ -3,8 +3,10 @@ ifeq ($(OS), Windows_NT)
 	LIBS += -Llib
 	INCLUDE += -Iinclude
 	OUT = -o bin/windows/AntPixel.exe
+	CLEAN = del *.o
 else
 	OUT = -o bin/linux/AntPixel
+	CLEAN = rm *.o
 endif
 
 LIBS += -lSDL2main -lSDL2 
@@ -21,4 +23,4 @@ link:
 	g++ $(OUT) $(LIBS) $(OBJS)
 
 clean:
-	rm *.o
+	$(CLEAN)
