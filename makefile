@@ -20,7 +20,7 @@ compile:
 	g++ $(INCLUDE) $(SRCS)
 
 link:
-	g++ $(OUT) $(LIBS) $(OBJS)
+	g++ $(OUT) $(OBJS) $(LIBS)
 
 clean:
 	$(CLEAN)
