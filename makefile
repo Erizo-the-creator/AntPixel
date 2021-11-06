@@ -1,9 +1,24 @@
-LIBS = -L lib  -l SDL2main -l SDL2 
+# If on windows..
+ifeq ($(OS), Windows_NT)
+	LIBS += -Llib
+	INCLUDE += -Iinclude
+	OUT = -o bin/windows/AntPixel.exe
+else
+	OUT = -o bin/linux/AntPixel
+endif
 
-all: compile link
+LIBS += -lSDL2main -lSDL2 
+CFLAGS =
+SRCS = -c src/*.cc
+OBJS = main.o
+
+all: compile link clean
 
 compile:
-	g++ -I include -c *.cc 
+	g++ $(INCLUDE) $(SRCS)
 
 link:
-	g++ main.o -o bin/AntPixel.exe $(LIBS)	
+	g++ $(OUT) $(LIBS) $(OBJS)
+
+clean:
+	rm *.o
