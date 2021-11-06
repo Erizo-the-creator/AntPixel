@@ -1,4 +1,4 @@
 make
-pushd bin/windows
+pushd bin\windows
 AntPixel.exe
 popd
