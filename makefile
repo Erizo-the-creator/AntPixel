@@ -1,6 +1,6 @@
 # If on windows..
 ifeq ($(OS), Windows_NT)
-	LIBS += -Llib
+	LIBS += -L lib
 	INCLUDE += -Iinclude
 	OUT = -o bin/windows/AntPixel.exe
 	CLEAN = del *.o
@@ -9,7 +9,7 @@ else
 	CLEAN = rm *.o
 endif
 
-LIBS += -lSDL2main -lSDL2 
+LIBS += -l SDL2main -l SDL2 
 CFLAGS =
 SRCS = -c src/*.cc
 OBJS = main.o
@@ -20,7 +20,7 @@ compile:
 	g++ $(INCLUDE) $(SRCS)
 
 link:
-	g++ $(OUT) $(LIBS) $(OBJS)
+	g++ $(OUT) $(OBJS) $(LIBS)
 
 clean:
 	$(CLEAN)
