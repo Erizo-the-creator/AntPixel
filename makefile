@@ -10,9 +10,8 @@ else
 endif
 
 LIBS += -l SDL2main -l SDL2 
-CFLAGS =
 SRCS = -c src/*.cc
-OBJS = main.o
+OBJS = main.o game.o
 
 all: compile link clean
 
