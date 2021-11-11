@@ -48,7 +48,7 @@ static void draw_ant(void) {
         SDL_RenderFillRect(renderer, &ant_rect);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char **argv) {
 	std::cout << "Cell size? (recommended 15)" << std::endl;
 	std::cin >> cell_size;
 
