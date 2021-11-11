@@ -4,53 +4,79 @@
 #include <iostream>	
 #include <stdio.h>
 
-#define GRID_CELL_SIZE cell_Size
 #define GRID_WIDTH 900
 #define GRID_HEIGHT 900
 
 #define MOVE_SPEED 0.01f
 #undef main
 
+#define RGBA(col) col.r, col.b, col.b, col.a
+
+static const SDL_Color ANT_COLOR = {255,255,255,255};
+static const SDL_Color BG_COLOR = {27, 33, 70, 255};
+static const SDL_Color GRID_COLOR = {13, 12, 50, 255};
+
+static SDL_Window *window;
+static SDL_Renderer *renderer;
+static int cell_size;
+
+static SDL_Rect ant_rect;
+
+/* Clears the entire screen with BG_COLOR. */
+static void draw_bg(void) {
+	SDL_SetRenderDrawColor(renderer, RGBA(BG_COLOR));
+        SDL_RenderClear(renderer);
+}
+
+static void draw_grid(void) {
+        SDL_SetRenderDrawColor(renderer, RGBA(GRID_COLOR));
+
+        for(unsigned int x = 0; x < GRID_WIDTH; x += cell_size) {
+                SDL_RenderDrawLine(renderer, x, 0, x, GRID_HEIGHT);
+        }
+
+        for(unsigned int y = 0; y < GRID_HEIGHT; y += cell_size) {
+                SDL_RenderDrawLine(renderer, 0, y, GRID_WIDTH, y);
+        }
+}
+
+static void draw_ant(void) {
+        SDL_SetRenderDrawColor(renderer, RGBA(ANT_COLOR));
+        SDL_RenderFillRect(renderer, &ant_rect);
+}
+
 int main(int argc, char* argv[]) {
 	std::cout << "Cell size? (recommended 15)" << std::endl;
-	int cell_Size;
-	std::cin >> cell_Size;
+	std::cin >> cell_size;
+
 	srand(time(NULL));
 
-	SDL_Rect antInstance = {
-		(GRID_WIDTH + 1) / 2 ,
-		(GRID_HEIGHT + 1) / 2 ,
-		GRID_CELL_SIZE,
-		GRID_CELL_SIZE,
-	};
-	SDL_Rect grid_cell = {
-		(GRID_WIDTH - 1),
-		(GRID_HEIGHT - 1),
-		GRID_CELL_SIZE,
-		GRID_CELL_SIZE,
-	};
-
-	SDL_Color ant_color = {255,255,255,255};
-	SDL_Color grid_background = {27, 33, 70, 255};
-	SDL_Color grid_line_color = {13, 12, 50, 255};
-
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-		SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Failed to initialize SDL video: %s\n", SDL_GetError());
-		return -2;
+                std::cerr << "Failed to initialize SDL video: " << SDL_GetError();
+		return -1;
 	}
 
-	SDL_Window* window = SDL_CreateWindow("AntPixel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 900, 900, SDL_WINDOW_OPENGL);
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+	window = SDL_CreateWindow("AntPixel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 900, 900, SDL_WINDOW_SHOWN);
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+
+	ant_rect = {
+		(GRID_WIDTH + 1) / 2,
+		(GRID_HEIGHT + 1) / 2,
+		cell_size,
+		cell_size,
+	};
 
 	bool quit = false;
-	
-	float counter = 0;
+        float t_start, t_end, dt;
 
+	SDL_Event ev;
 	while(!quit){
-		SDL_Event e;
-		float start = SDL_GetPerformanceCounter();
-		while (SDL_PollEvent(&e)) {
-			switch(e.type) {
+		t_start = SDL_GetPerformanceCounter();
+		dt = (t_end - t_start) / SDL_GetPerformanceFrequency();	
+                t_end = t_start;
+
+		while(SDL_PollEvent(&ev)) {
+			switch(ev.type) {
 				case SDL_QUIT:
 					quit = true;
 					break;
@@ -58,31 +84,13 @@ int main(int argc, char* argv[]) {
 		}
 
 
-		SDL_RenderClear(renderer);
-		SDL_SetRenderDrawColor(renderer, grid_line_color.r, grid_line_color.g, grid_line_color.b, grid_line_color.a);
-		for (int x = 0; x < GRID_WIDTH * GRID_CELL_SIZE; x += GRID_CELL_SIZE) {
-			SDL_RenderDrawLine(renderer, x, 0, x, 900);
-		}
+                draw_bg();
+                draw_grid();		
+                draw_ant();
 
-		for (int y = 0; y < GRID_HEIGHT * GRID_CELL_SIZE; y += GRID_CELL_SIZE) {
-			SDL_RenderDrawLine(renderer, 0, y, 900, y);
-		}
-		SDL_SetRenderDrawColor(renderer, ant_color.r, ant_color.g, ant_color.b, ant_color.a);
-		SDL_RenderFillRect(renderer, &antInstance);
-		
 		SDL_RenderPresent(renderer);
+        }
 
-		SDL_SetRenderDrawColor(renderer, grid_background.r, grid_background.g, grid_background.b, grid_background.a);
-		SDL_RenderFillRect(renderer, &grid_cell);
-
-		
-		
-		float end = SDL_GetPerformanceCounter();
-		float dt = (end - start) / (float)SDL_GetPerformanceFrequency();	
-		
-		counter += dt / 10;
-		//printf("dt: %f\n counter: %f \n",dt,counter);	
-		}
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
