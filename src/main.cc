@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 #define GRID_CELL_SIZE cell_Size
-#define GRID_WIDTH 900 / GRID_CELL_SIZE * GRID_CELL_SIZE
-#define GRID_HEIGHT 900 / GRID_CELL_SIZE * GRID_CELL_SIZE
+#define GRID_WIDTH 900
+#define GRID_HEIGHT 900
 
 #define MOVE_SPEED 0.01f
 #undef main
