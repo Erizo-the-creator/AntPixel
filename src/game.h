@@ -7,7 +7,7 @@ public:
     ~Game();
 
     void loop();
-    void update(double dt);
+    void update();
     void draw();
 
 private:
