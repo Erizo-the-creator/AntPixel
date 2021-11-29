@@ -1,19 +1,17 @@
 #include "game.h"
 #include "AntPixel_common.h"
-
 #define RGBA(c) c.r, c.g, c.b, c.a
 #define WINDOW_WIDTH 900
 #define WINDOW_HEIGHT 900
-double start;
-double end;
-double counter = 0;
+uint64_t now, last_frame;
+bool quit = false;
+float counter = 0;
 float dt;
 int cell_size = 5;
-uint32_t GRID_WIDTH = 900;
-uint32_t GRID_HEIGHT = 900;
-
+uint16_t GRID_WIDTH = 900, GRID_HEIGHT = 900;
+float accumulator;
 Game::Game(){
- 
+    srand(time(NULL));
     //std::cout << "Cell size? (recommended 5)" << std::endl;
     //std::cin >> cell_size;
     m_window = SDL_CreateWindow("AntPixel", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_SHOWN);
@@ -23,7 +21,7 @@ Game::Game(){
     m_grid_background = {27, 33, 70, 255};
     m_grid_line_color = {13, 12, 50, 255};
 
-    m_ant_instance.x = 0;
+    m_ant_instance.x = GRID_WIDTH / 3;
     m_ant_instance.y = GRID_HEIGHT / 2;
     m_ant_instance.w = cell_size;
     m_ant_instance.h = cell_size;
@@ -46,17 +44,27 @@ Game::~Game(){
     SDL_Quit();
 }
 
-bool quit = false;
 void Game::loop(){
-
     while (!quit){
-        end = start;
-        start = SDL_GetPerformanceCounter();
+        now = SDL_GetPerformanceCounter();
+        dt = (float)(now - last_frame) / SDL_GetPerformanceCounter();
+        last_frame = now;
         SDL_Event e;
         while (SDL_PollEvent(&e)){
             switch (e.type){
             case SDL_QUIT:
                 quit = true;
+                break;
+            case SDL_KEYDOWN:
+                if(e.key.keysym.sym == SDLK_ESCAPE){
+                    quit = true;
+                }
+                if(e.key.keysym.sym == SDLK_KP_PLUS){
+                    cell_size++;
+                }
+                if(e.key.keysym.sym == SDLK_KP_MINUS){
+                    cell_size--;
+                }
                 break;
             }
         }
@@ -87,14 +95,23 @@ void Game::draw(){
     SDL_RenderFillRect(m_renderer, &m_ant_instance);
 
     SDL_RenderPresent(m_renderer);
-    
-    printf("dt: %f\n counter: %f \n", dt, counter);
+    printf("dt: %f \n", dt);
 }
 
 void Game::update(){
-    m_ant_instance.x += cell_size;
-    float dt = (end - start) / (float)SDL_GetPerformanceFrequency();
-    counter++;
-    counter *= dt;
-
+    m_ant_instance.w = cell_size;
+    m_ant_instance.h = cell_size;
+    
+    int direction = rand() % 10;
+    
+    switch (direction){
+    
+    case 1: m_ant_instance.x += cell_size; break;
+          
+    case 2: m_ant_instance.x -= cell_size; break;
+        
+    case 3: m_ant_instance.y += cell_size; break;
+    
+    case 4: m_ant_instance.y -= cell_size; break;
+    }
 }

@@ -4,5 +4,6 @@
 #include <iostream>
 #include <stdio.h>
 #include "game.h"
-
+#include <chrono>
+#include <ctime>
 #undef main
