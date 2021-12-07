@@ -47,7 +47,7 @@ Game::~Game(){
 void Game::loop(){
     while (!quit){
         now = SDL_GetPerformanceCounter();
-        dt = (float)(now - last_frame) / SDL_GetPerformanceCounter();
+        dt = (double)((now - last_frame) / SDL_GetPerformanceCounter());
         last_frame = now;
         SDL_Event e;
         while (SDL_PollEvent(&e)){
@@ -64,6 +64,13 @@ void Game::loop(){
                 }
                 if(e.key.keysym.sym == SDLK_KP_MINUS){
                     cell_size--;
+                }
+            case SDL_MOUSEWHEEL:
+                if(e.wheel.y > 0){
+                    
+                }
+                if(e.wheel.y < 0){
+                    
                 }
                 break;
             }
@@ -103,15 +110,13 @@ void Game::update(){
     m_ant_instance.h = cell_size;
     
     int direction = rand() % 10;
-    
+    int times = rand() % 10;
     switch (direction){
-    
-    case 1: m_ant_instance.x += cell_size; break;
-          
-    case 2: m_ant_instance.x -= cell_size; break;
-        
-    case 3: m_ant_instance.y += cell_size; break;
-    
-    case 4: m_ant_instance.y -= cell_size; break;
+	
+       case 1: for (int i = 0;i < times; i++){ if(m_ant_instance.x == 900){continue;} m_ant_instance.x += cell_size;}break;
+       case 2: for (int i = 0; i < times; i++){ if (m_ant_instance.x == -900){continue;}m_ant_instance.x -= cell_size;}break;
+       case 3: for (int i = 0; i < times; i++){ if (m_ant_instance.x == 900){continue;}m_ant_instance.y += cell_size;}break;
+       case 4: for (int i = 0; i < times; i++){ if (m_ant_instance.x == -900){continue;}m_ant_instance.y -= cell_size;}break;
+           accumulator *= dt;
     }
 }
